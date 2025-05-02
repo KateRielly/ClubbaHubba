@@ -21,8 +21,11 @@
  <script type="module">
    import {login} from './script.js';
    import {addMeetings} from './scriptC.js';
+   import {loadLeaderboard} from './leaderboardScore.js';
    window.addMeetings = addMeetings;
+   window.loadLeaderboard = loadLeaderboard;
    addMeetings();
+   loadLeaderboard();
  </script>
    <div class="nav">
        <button class="button">Home</button>
@@ -76,7 +79,9 @@
             </div>
         </div>
    </div>
-
+    
+    
+    
     <!-- Calendar Section -->
     <section id="calendar">  
         <div class="calendarTitle">

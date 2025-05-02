@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Fixed the type attribute in the link tag -->
+    <link rel="stylesheet" type="text/css" href="style.css">
+   
+    <title>clubba hubba</title>
+</head>
+<body>
+    <!-- creates the header box and the title, inside the box -->
+    <header class="header" id="header">
+        <h1> Clubba Hubba</h1>
+    </header>
+
+    <!-- Creates a bar below header box with nav buttons -->
+ <!-- Creates a bar bellow hearder box with nav buttons -->
+ <script type="module" src="script.js"></script>
+ <script type="module" src="./scriptC.js"></script>
+ <script type="module">
+   import {login} from './script.js';
+   import {addMeetings} from './scriptC.js';
+   window.addMeetings = addMeetings;
+   addMeetings();
+ </script>
+   <div class="nav">
+       <button class="button">Home</button>
+       <a class="button" href="#calendar">Calendar</a>
+       <button class="button" onClick = "location.replace('clubDirectory.html');">Club Directory</button>
+       <button class="button" onClick = "location.replace('choose.html');">Log in</button>
+   </div>
+
+
+    <!-- creates a box to hold the ranking stuff -->
+   <div class="rankings">
+        <div class="rankingsBox">
+            <h2 class="rankingTitle"> CLUB ENGAGEMENT RANKINGS (L2)</h2>
+            <div class="topTenList">
+                <div class="topThree">
+                    <img src="images/trophy.png" alt="trophy" class="trophy">
+                    <p id="firstLTwo">First</p>
+                    <img src="images/trophy.png" alt="trophy" class="trophy">
+                </div>
+                <div class="topThree">
+                    <img src="images/Silver.png" alt="trophy" class="trophy">
+                    <p id="secondLTwo">Second</p>
+                    <img src="images/Silver.png" alt="trophy" class="trophy">
+                </div>
+                <div class="topThree">
+                    <img src="images/Bronze.png" alt="trophy" class="trophy">
+                    <p id="thirdLTwo">Third</p>
+                    <img src="images/Bronze.png" alt="trophy" class="trophy">
+                </div>
+            </div>
+        </div>
+
+        <div class="rankingsBox">
+            <h2 class="rankingTitle"> CLUB ENGAGEMENT RANKINGS (L3)</h2>
+            <div class="topTenList">
+                <div class="topThree">
+                    <img src="images/trophy.png" alt="trophy" class="trophy">
+                    <p id="firstLThree">First</p>
+                    <img src="images/trophy.png" alt="trophy" class="trophy">
+                </div>
+                <div class="topThree">
+                    <img src="images/Silver.png" alt="trophy" class="trophy">
+                    <p id="secondLThree">Second</p>
+                    <img src="images/Silver.png" alt="trophy" class="trophy">
+                </div>
+                <div class="topThree">
+                    <img src="images/Bronze.png" alt="trophy" class="trophy">
+                    <p id="thirdLThree">Third</p>
+                    <img src="images/Bronze.png" alt="trophy" class="trophy">
+                </div>
+            </div>
+        </div>
+   </div>
+
+    <!-- Calendar Section -->
+    <section id="calendar">  
+        <div class="calendarTitle">
+            <h1>Calendar</h1>
+        </div>
+    
+
+            <!-- Calendar Display -->
+
+            <div class="calendar">
+
+                <!-- Calendar Header -->
+                <div class="Cheader">
+                    <div id="prev" class="arrow left"><i></i></div> <!-- Previous month arrow -->
+                    <div id="month-year"></div> <!-- Current month and year display -->
+                    <div id="next" class="arrow right"><i></i></div> <!-- Next month arrow -->
+                </div>
+
+                <!-- Days of the Week -->
+                <div class="weekdays">
+                    <div class="dayName">Sun</div> <!-- Sunday -->
+                    <div class="dayName">Mon</div> <!-- Monday -->
+                    <div class="dayName">Tue</div> <!-- Tuesday -->
+                    <div class="dayName">Wed</div> <!-- Wednesday -->
+                    <div class="dayName">Thu</div> <!-- Thursday -->
+                    <div class="dayName">Fri</div> <!-- Friday -->
+                    <div class="dayName">Sat</div> <!-- Saturday -->
+                </div>
+
+                <!-- Calendar Days -->
+                <div class="days" id="days"></div> <!-- Populated dynamically with days -->
+
+            </div>
+        </div>
+</section>
+
+
+
+<!-- Footer -->
+<div class="footer">
+    <div class="logos">
+        <img class="logo" src="images/stab_logo.webp" alt="logo">
+    </div>
+    <p class="footnote">Club Directory</p>
+    <p class="footnote">Profile</p>
+</div>
+
+<!-- Your scriptC.js -->
+
+</body>
+</html>

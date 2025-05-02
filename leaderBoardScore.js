@@ -36,7 +36,6 @@ const db = getFirestore(app);
 
 export const updatePoints = async function(clubUsername, oAttendance, nAttendance, oldEventBoolean, eventBoolean){
    //in Kate's code
-   console.log("updatePoints was called!!!!");
     var username = clubUsername;
     var oldAttendance = oAttendance;
     var newAttendance = nAttendance;
@@ -44,8 +43,11 @@ export const updatePoints = async function(clubUsername, oAttendance, nAttendanc
     var oldEventPoint = 0;
     var newEvent = eventBoolean;
     var newMeetingPoints = 1;
+
     const docRef = doc(db, "clubs", username);
+
     const docSnap = await getDoc(docRef);
+    console.log("help");
     const pointTotal = docSnap.data().points;
     console.log(pointTotal);
     // const meetingsCollectionRef = collection(docRef, "all-meetings");
@@ -56,7 +58,10 @@ export const updatePoints = async function(clubUsername, oAttendance, nAttendanc
     var newAttendancePoint = newAttendance/memberCount;
 
     if (oldEvent == true){
-      oldEventPoint = 1;
+      oldEventPoint = 3;
+    }
+    else{
+      oldEventPoint = 2;
     }
 
     await updateDoc(doc(db, "clubs", username), {
@@ -70,7 +75,10 @@ export const updatePoints = async function(clubUsername, oAttendance, nAttendanc
 
     //now calculate new points to add:
     if (newEvent == true){
-      newMeetingPoints = newMeetingPoints + 1;
+      newMeetingPoints = newMeetingPoints + 3;
+    }
+    else{
+      newMeetingPoints = newMeetingPoints + 2;
     }
 
     const newTotal = resetPointTotal + newMeetingPoints + newAttendancePoint;
@@ -218,4 +226,94 @@ export const updatePoints = async function(clubUsername, oAttendance, nAttendanc
           });
         }
       }
+    }
+      
+
+
+//meeting (1 point)
+//percentage of ppl @ meeting (percentage of a pt)
+//beyond general membership (2 points)
+
+//Each club needs pt total; on meeting fillout, trigger meeting count, which triggers pointUpdate; point update adds a pt for having a meeting, percentage of pt, and wokrs iwth any tag values; then will need to update leaderboard depending
+
+// var meetingCount = 0;
+// var
+
+// //called in kate's code when form filled out
+// function meetingCount(){
+//   meetingCount ++;
+//   updatePoints();
+// }
+
+// function updatePoints(){
+
+// }
+
+// Meetings (array)
+// 	0 (map)
+// 		attendance (number)
+// 		date (timestamp)
+// 		description (string)
+
+
+
+      // //appending to leaderboard - L2
+      // //code building homepage (script.js)
+      // var L2First = document.getElementById("firstLTwo");
+      // L2First.innerHTMl = docSnapTwoFirst.data().clubName;
+      
+      // var L2Second = document.getElementById("secondLTwo");
+      // L2Second.innerHTMl = docSnapTwoSecond.data().clubName;
+
+      // var L2Third = document.getElementById("thirdLTwo");
+      // L2Third.innerHTMl = docSnapTwoFirst.data().clubName;
+
+      // var L2First = document.getElementById("firstLTwo");
+      // L2First.innerHTMl = docSnapTwoFirst.data().clubName;
+
+      // var L2First = document.getElementById("firstLTwo");
+      // L2First.innerHTMl = docSnapTwoFirst.data().clubName;
+
+      // var L2First = document.getElementById("firstLTwo");
+      // L2First.innerHTMl = docSnapTwoFirst.data().clubName;
+
+
+    export const loadLeaderboard = async function(){
+      //appending to leaderboard - L2
+     const docRefTwoFirst = doc(db, "metadata", "L2first");
+     const docSnapTwoFirst = await getDocs(docRefTwoFirst);
+            
+     const docRefTwoSecond = doc(db, "metadata", "L2second");
+     const docSnapTwoSecond = await getDocs(docRefTwoSecond);
+            
+     const docRefTwoThree = doc(db, "metadata", "L2third");
+     const docSnapTwoThird = await getDocs(docRefTwoThree);
+        
+     const docRefThreeFirst = doc(db, "metadata", "L3first");
+     const docSnapThreeFirst = await getDocs(docRefThreeFirst);
+        
+     const docRefThreeSecond = doc(db, "metadata", "L3second");
+     const docSnapThreeSecond = await getDocs(docRefThreeSecond);
+            
+     const docRefThreeThird = doc(db, "metadata", "L3third");
+     const docSnapThreeThird = await getDocs(docRefThreeThird);
+       
+     var L2First = document.getElementById("firstLTwo");
+     L2First.innerHTMl = docSnapTwoFirst.data().clubName;
+      
+     var L2Second = document.getElementById("secondLTwo");
+     L2Second.innerHTMl = docSnapTwoSecond.data().clubName;
+
+     var L2Third = document.getElementById("thirdLTwo");
+     L2Third.innerHTMl = docSnapTwoThird.data().clubName;
+
+     var L2First = document.getElementById("firstLTwo");
+     L2First.innerHTMl = docSnapThreeFirst.data().clubName;
+
+     var L2First = document.getElementById("firstLTwo");
+     L2First.innerHTMl = docSnapThreeSecond.data().clubName;
+
+     var L2First = document.getElementById("firstLTwo");
+     L2First.innerHTMl = docSnapThreeThird.data().clubName;
+
     }

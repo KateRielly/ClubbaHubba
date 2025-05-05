@@ -662,3 +662,7 @@ h4{
     align-items: center;
     justify-content: center;
 }
+
+.searchIcon{
+    height: 25px;
+}

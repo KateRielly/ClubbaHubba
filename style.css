@@ -627,7 +627,7 @@ h4{
     justify-content: center;
 }
 .mainAdminBox{
-    background-color: blue;
+    background-color: rgba(152, 152, 152, 0.44);
     padding: 5px;
     margin: 30px;
     margin-left: 0;
@@ -637,8 +637,28 @@ h4{
 }
 
 .clubsInDanger{
-    background-color: turquoise;
+    background-color: rgba(152, 152, 152, 0.44);
     padding: 5px; margin: 30px; width: 20%;
     border-radius: 4px;
     height: 75vh;
+}
+
+.search{
+    margin-top: 10px;
+    display: flex;
+    background-color: rgb(255, 255, 255);
+    border-radius: 20px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+}
+
+.adminClubInfo{
+    display: flex;
+    margin: 10px;
+    background-color: rgb(255, 255, 255,.75);
+    border-radius: 10px;
+    height: 92%;
+    align-items: center;
+    justify-content: center;
 }

@@ -3,7 +3,7 @@ import { initializeApp } from
 // TODO: import libraries for Cloud Firestore Database
 // https://firebase.google.com/docs/firestore
 import { getFirestore, collection, addDoc, getDocs,getDoc, doc, updateDoc, deleteDoc, setDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
-import {updatePoints} from "./leaderBoardScore.js";
+import {updatePoints} from "./leaderboardScore.js";
 
 const firebaseConfig = {
 apiKey: "AIzaSyAH3oWF9S-ePd0352Ca-TdE5cu6oinzlXo",

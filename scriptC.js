@@ -24,6 +24,7 @@ const prevButton = document.getElementById('prev'); // Button to navigate to the
 const nextButton = document.getElementById('next'); // Button to navigate to the next month.
 
 
+
 const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
@@ -58,13 +59,19 @@ export async function addMeetings() {
             // Format the date as month/day/year
             const formattedDate = `${month}/${day}/${year}`;
             console.log(formattedDate); // Log the formatted date
-
+            const timestamp = meeting.data().date
+            const date = timestamp.toDate();
+            const time = date.toLocaleTimeString();
             events.push({
-                // Save the clicked date.
-                date: formattedDate, // Save the clicked date.
+                date: formattedDate, // Save the date.
                 title: item.data().clubName.toString(), // Save the inputted title.
+                username: item.data().username,
+                location: meeting.data().location,
+                description: meeting.data().description,
+                time: time,
                 username: item.data().username
             });
+
         }
     }
 
@@ -80,8 +87,7 @@ export async function addMeetings() {
 // Renders the calendar for the given date.
 // `date`: The date for which the calendar should be rendered.
 function renderCalendar(date) {
-   
-    // Select the element
+
     const year = date.getFullYear(); // Extract the year.
     const month = date.getMonth(); // Extract the month.
     const firstDay = new Date(year, month, 1).getDay(); // Get the weekday of the first day of the month.
@@ -104,13 +110,55 @@ function renderCalendar(date) {
 
         daysContainer.appendChild(dayDiv);
 
-        const eventForDay = events.filter(e => e.date === dayString);
-        eventForDay.forEach(event => { // Iterate through all matching events
-            const eventDiv = document.createElement('div');
-            eventDiv.innerText = `${event.title} meeting`; // Display the event title + write meeting @ end
-            eventDiv.classList.add('event');
-            dayDiv.appendChild(eventDiv); // Append the event to the day div
+    // Filter events to only include those matching the current day (dayString)
+    const eventForDay = events.filter(e => e.date === dayString);
+
+    // Iterate through all matching events for the day
+    eventForDay.forEach(event => {
+        // Create a new <div> to represent the event
+        const eventDiv = document.createElement('div');
+
+        // Set the text of the event div to the event title followed by "meeting"
+        eventDiv.innerText = `${event.title} meeting`;
+
+        // Add a CSS class for styling the event div
+        eventDiv.classList.add('event');
+
+        // Add a click event listener to show detailed info when the event is clicked
+        eventDiv.addEventListener('click', function () {
+            console.log('meeting info box called!');
+
+            // Store the event's username (e.g., club name) in sessionStorage for access across pages
+            sessionStorage.setItem("club", event.username);
+
+            // Get the modal element that will display event details
+            const infoModal = document.getElementById("eventInfoModal");
+
+            //Cear out modal 
+            document.getElementById("clubPopUp").innerHTML = "Club: ";
+            document.getElementById("datePopUp").innerHTML = "Date: ";
+            document.getElementById("timePopUp").innerHTML = "Time: ";
+            document.getElementById("locationPopUp").innerHTML = "Location: ";
+            document.getElementById("descriptionPopUp").innerHTML = "Description: ";
+
+            // Fill in the modal with event details
+            document.getElementById("clubPopUp").innerHTML += event.title;
+            document.getElementById("datePopUp").innerHTML += event.date;
+            document.getElementById("timePopUp").innerHTML += event.time;
+            document.getElementById("locationPopUp").innerHTML += event.location;
+            document.getElementById("descriptionPopUp").innerHTML += event.description;
+
+            // Show the modal (assumes flex display for centering)
+            infoModal.style.display = "flex";
+
+            // Log the full event object to the console for debugging
+            console.log(event);
         });
+
+        // Append the newly created event div to the current day's container (dayDiv)
+        dayDiv.appendChild(eventDiv);
+    });
+
     }
 
     // Add dates for the current month.
@@ -128,9 +176,43 @@ function renderCalendar(date) {
 
         const eventForDay = events.filter(e => e.date === dayString);
         eventForDay.forEach(event => { // Iterate through all matching events
+
             const eventDiv = document.createElement('div');
             eventDiv.innerText = `${event.title} meeting`; // Display the event title + write meeting @ end
             eventDiv.classList.add('event');
+            // Add a click event listener to the event div
+            eventDiv.addEventListener('click', function () {
+                // Log to console that the modal is being triggered (for debugging)
+                console.log('meeting info box called!');
+
+                // Store the event's username (used as a club identifier) in session storage
+                // This allows access to the club's data on other pages or after navigation
+                sessionStorage.setItem("club", event.username);
+
+                // Get the modal element where event details will be displayed
+                const infoModal = document.getElementById("eventInfoModal");
+
+                //Cear out modal 
+                document.getElementById("clubPopUp").innerHTML = "Club: ";
+                document.getElementById("datePopUp").innerHTML = "Date: ";
+                document.getElementById("timePopUp").innerHTML = "Time: ";
+                document.getElementById("locationPopUp").innerHTML = "Location: ";
+                document.getElementById("descriptionPopUp").innerHTML = "Description: ";
+                
+                // Populate the modal's fields with the selected event's information
+                // Using += appends text — be cautious if you don’t want to accumulate content on repeated clicks
+                document.getElementById("clubPopUp").innerHTML += event.title;         // Club name/title
+                document.getElementById("datePopUp").innerHTML += event.date;         // Event date
+                document.getElementById("timePopUp").innerHTML += event.time;         // Event time
+                document.getElementById("locationPopUp").innerHTML += event.location; // Event location
+                document.getElementById("descriptionPopUp").innerHTML += event.description; // Event description
+
+                // Make the modal visible using flex display
+                infoModal.style.display = "flex";
+
+                // Log the full event object to the console (useful for debugging)
+                console.log(event);
+            });
             dayDiv.appendChild(eventDiv); // Append the event to the day div
         });
 
@@ -153,12 +235,34 @@ function renderCalendar(date) {
             const eventDiv = document.createElement('div');
             eventDiv.innerText = `${event.title} meeting`; // Display the event title + write meeting @ end
             eventDiv.classList.add('event');
+            eventDiv.addEventListener('click', function () {
+                console.log('meeting info box called!')
+
+                //Cear out modal 
+                document.getElementById("clubPopUp").innerHTML = "Club: ";
+                document.getElementById("datePopUp").innerHTML = "Date: ";
+                document.getElementById("timePopUp").innerHTML = "Time: ";
+                document.getElementById("locationPopUp").innerHTML = "Location: ";
+                document.getElementById("descriptionPopUp").innerHTML = "Description: ";
+            
+                // clubID should be the name of the club
+                sessionStorage.setItem("club", event.username);
+                const infoModal = document.getElementById("eventInfoModal");
+                document.getElementById("clubPopUp").innerHTML += event.title;
+                document.getElementById("datePopUp").innerHTML += event.date;
+                document.getElementById("timePopUp").innerHTML += event.time;
+                document.getElementById("locationPopUp").innerHTML += event.location;
+                document.getElementById("descriptionPopUp").innerHTML += event.description;
+                infoModal.style.display = "flex";
+                console.log(event);
+            });
             dayDiv.appendChild(eventDiv); // Append the event to the day div
         });
 
         daysContainer.appendChild(dayDiv);
     }
 }
+
 
 // Navigate to the previous month.
 prevButton.addEventListener('click', function () {
@@ -175,5 +279,3 @@ nextButton.addEventListener('click', function () {
 
 console.log("event");
 // Initial render of the calendar.
-
-

@@ -125,6 +125,7 @@ export const moreInfo = async function(){
     yearFounded: document.getElementById("yearFounded").value,
     bio: document.getElementById("bio").value,
     points: 0,
+    lastMeeting: new Date() //KATE ADDED THIS FOR CALCULATING CLUBS IN DANGER!!!
   }
 );
 // each section of this prints correctly into console. selected tags show up as list that updates as new tags added

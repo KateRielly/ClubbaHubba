@@ -50,3 +50,46 @@ export const checkLogin = async function(){
     } 
   });
 }
+
+export const displayClubsInDanger = async function() {
+  console.log("THIS IS BEING CALLED!!!!")
+  var clubsInDangerDiv = document.getElementById("clubsInDangerDiv");
+  const databaseItems = await getDocs(collection(db, "clubs"));
+
+  
+  const todaysDate = new Date();
+  // Calculate the date for two months ago
+  const twoMonthsAgo = new Date(todaysDate);
+  twoMonthsAgo.setMonth(todaysDate.getMonth() - 2);
+  console.log(twoMonthsAgo);
+  
+  const clubsInDanger = [];
+  
+  // Loop through database items to find clubs that haven't met in the last two months
+  databaseItems.forEach(club => {
+    const lastMeetingDate = club.data().lastMeeting; // Ensure this is a Date object
+    if (lastMeetingDate <= twoMonthsAgo) {
+      clubsInDanger.push(club);
+      console.log("eyooo");
+    }
+  });
+
+  // Render clubs in danger in the div
+  clubsInDanger.sort((a, b) => {
+    const nameA = a.data().clubName.toLowerCase();
+    const nameB = b.data().clubName.toLowerCase();
+    return nameA.localeCompare(nameB);
+  });
+  
+  clubsInDanger.forEach(club => {
+    var clubInDanger = document.createElement("button");
+    clubInDanger.classList.add('dangerButton');
+    clubInDanger.innerHTML=club.data().clubName;
+    clubInDanger.onclick = function() {
+      location.replace("clubDash.html");
+      sessionStorage.setItem("club", club.data().username);
+      //this does somehting when the club tile is clicked
+      }
+    clubsInDangerDiv.appendChild(clubInDanger);
+  });
+}

@@ -131,7 +131,8 @@ resid=zed to fit nicly beside the calendar-- */
 
 .Cheader {
     /* makes space between header items */
-    display: flex;  justify-content: space-between; align-items: center;
+    display: flex;  
+    justify-content: space-between; align-items: center;
     padding: 10px; margin: 0.75vw;
     background-color: #afadad; 
 }
@@ -241,7 +242,6 @@ resid=zed to fit nicly beside the calendar-- */
     text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
-
 /* --- END CALENDAR --- */
 
 
@@ -304,14 +304,18 @@ revealing background image in logos */
 }
 
 .clubsBox {
-    display: flexbox; padding: 0.5%;
-    background-color: rgb(141, 13, 24);      
+    display: flex; padding: 20px;
+    background-color: rgb(141, 13, 24);  
+    justify-content: space-between; 
+    flex-direction: row;   
+    flex-wrap: wrap;
 }
 
 .clubButton{
     cursor: pointer;
-    padding-top: 4px; padding-bottom: 4px; padding-left: 1vw; padding-right: 1vw;
+    padding-top: 4px; padding-bottom: 4px;
     margin: 2px;
+    width: 23%;
     background-color: rgb(255, 255, 255);
     border-color: transparent; border-radius: 7px;
     font-family: 'Times New Roman', Times, serif; font-size: 20px;
@@ -663,13 +667,17 @@ h4{
     padding: 5px; margin: 30px; width: 20%;
     border-radius: 4px;
     height: 75vh;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .search{
-    margin-top: 10px;
+    margin: 10px;
+    margin-bottom: 0px;
     display: flex;
     background-color: rgb(255, 255, 255);
-    border-radius: 20px;
+    border-radius: 10px;
     height: 30px;
     align-items: center;
     justify-content: center;
@@ -687,4 +695,24 @@ h4{
 
 .searchIcon{
     height: 25px;
+}
+
+.dangerButton{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(224, 20, 37, 0.766);
+    width: 90%;
+    margin-top: 13px;
+    margin-left: 5%;
+    border: transparent;
+    border-radius: 4px;
+    color: white;
+    padding: 4px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.dangerButton:hover{
+    background-color:rgb(141, 13, 24);
 }

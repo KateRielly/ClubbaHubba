@@ -42,9 +42,7 @@ export const updatePoints = async function(clubUsername, oAttendance, nAttendanc
    console.log(oAttendance);
    console.log(nAttendance);
    console.log(oldEventBoolean);
-   console.log(oldEventPoint);
    console.log(eventBoolean);
-   console.log(newMeetingPoints);
 
     var username = clubUsername;
     //attendance from previous edit of meeting
@@ -95,7 +93,7 @@ export const updatePoints = async function(clubUsername, oAttendance, nAttendanc
     console.log("og point total = " + pointTotal);
 
     //setting local point total to point total without any points related to this meeting. No duplicate points for one meeting.
-    localPointTotal = pointTotal - oldAttendance - oldEventPoint;
+    localPointTotal = pointTotal - oldAttendancePoint - oldEventPoint;
 
     console.log("reset point total = " + localPointTotal);
 
@@ -114,22 +112,27 @@ export const updatePoints = async function(clubUsername, oAttendance, nAttendanc
     
     // calculate new points to add:
     //points for event vs. meeting
+    console.log("before calc" + newEvent);
     if (newEvent == true){
       newMeetingPoints = newMeetingPoints + 3;
+      console.log("is event")
     }
     else{
       newMeetingPoints = newMeetingPoints + 2;
     }
 
+    console.log(newMeetingPoints);
     //adding new, updated points for meeting to meeting total
     localPointTotal = localPointTotal + newMeetingPoints + newAttendancePoint;
 
     console.log("end newTotal = " + localPointTotal);
 
-    await updateDoc(doc(db, "clubs", username), {
+    updateDoc(doc(db, "clubs", username), {
       //adding newly calculated pt total additions from this meeting
         points: localPointTotal,
     });
+
+    console.log("did you make it?");
 
 ////comparing with leaderboards:::
     //getting leaderboard point totals (1st-3rd places for L2 and L3 clubs)
@@ -158,10 +161,14 @@ export const updatePoints = async function(clubUsername, oAttendance, nAttendanc
     const pointL3Third = docSnapThreeThird.data().points;
 
     const type = docSnap.data().type;
+    console.log(type);
+
 
     //L2 - update 1st place if this club's total is now bigger
     if (type == "L2"){
-        if (newTotal > pointL2First){
+      console.log("got to second part");
+        if (localPointTotal > pointL2First){
+          console.log("bigger point total")
           var oldFirstPlaceL2 = docSnapTwoFirst.data().points;
           var oldFirstPlaceL2Name = docSnapTwoFirst.data().clubName;
 
@@ -170,7 +177,7 @@ export const updatePoints = async function(clubUsername, oAttendance, nAttendanc
           
           await updateDoc(doc(db, "metadata", "L2first"), {
             clubName: clubUsername,
-            points: newTotal,
+            points: localPointTotal,
           });
           await updateDoc(doc(db, "metadata", "L2second"), {
             clubName: oldFirstPlaceL2Name,
@@ -182,7 +189,7 @@ export const updatePoints = async function(clubUsername, oAttendance, nAttendanc
           });
         }
             //if they have the same total, put new club 1st and bumb current leader to second and second to third
-        else if(newTotal == pointL2First){
+        else if(localPointTotal == pointL2First){
           var oldFirstPlaceL2 = docSnapTwoFirst.data().points;
           var oldFirstPlaceL2Name = docSnapTwoFirst.data().clubName;
 
@@ -191,7 +198,7 @@ export const updatePoints = async function(clubUsername, oAttendance, nAttendanc
           
           await updateDoc(doc(db, "metadata", "L2first"), {
             clubName: clubUsername,
-            points: newTotal,
+            points: localPointTotal,
           });
           await updateDoc(doc(db, "metadata", "L2second"), {
             clubName: oldFirstPlaceL2Name,
@@ -204,43 +211,43 @@ export const updatePoints = async function(clubUsername, oAttendance, nAttendanc
 
         }
             //if bigger than second place, replace
-        else if(newTotal > pointL2Second){
+        else if(localPointTotal > pointL2Second){
           var oldSecondPlaceL2 = docSnapTwoSecond.data().points;
           var oldSecondPlaceL2Name = docSnapTwoSecond.data().clubName;
           
           await updateDoc(doc(db, "metadata", "L2second"), {
             clubName: clubUsername,
-            points: newTotal,
+            points: localPointTotal,
           });
           await updateDoc(doc(db, "metadata", "L2third"), {
             clubName: oldSecondPlaceL2Name,
             points: oldSecondPlaceL2,
           });
         }
-        else if(newTotal == pointL2Second){
+        else if(localPointTotal == pointL2Second){
           var oldSecondPlaceL2 = docSnapTwoSecond.data().points;
           var oldSecondPlaceL2Name = docSnapTwoSecond.data().clubName;
           
           await updateDoc(doc(db, "metadata", "L2second"), {
             clubName: clubUsername,
-            points: newTotal,
+            points: localPointTotal,
           });
           await updateDoc(doc(db, "metadata", "L2third"), {
             clubName: oldSecondPlaceL2Name,
             points: oldSecondPlaceL2,
           });
         }
-        else if(newTotal >= pointL2Third){
+        else if(localPointTotal >= pointL2Third){
           await updateDoc(doc(db, "metadata", "L2third"), {
             clubName: clubUsername,
-            points: newTotal,
+            points: localPointTotal,
           });
         }
       }
      
       //L3
       if (type == "L3"){
-        if (newTotal > pointL3First){
+        if (localPointTotal > pointL3First){
           var oldFirstPlaceL3 = docSnapThreeFirst.data().points;
           var oldFirstPlaceL3Name = docSnapThreeFirst.data().clubName;
 
@@ -249,7 +256,7 @@ export const updatePoints = async function(clubUsername, oAttendance, nAttendanc
           
           await updateDoc(doc(db, "metadata", "L3first"), {
             clubName: clubUsername,
-            points: newTotal,
+            points: localPointTotal,
           });
           await updateDoc(doc(db, "metadata", "L3second"), {
             clubName: oldFirstPlaceL3Name,
@@ -260,7 +267,7 @@ export const updatePoints = async function(clubUsername, oAttendance, nAttendanc
             points: oldSecondPlaceL3,
           });
         }
-        else if(newTotal == pointL3First){
+        else if(localPointTotal == pointL3First){
           var oldFirstPlaceL3 = docSnapThreeFirst.data().points;
           var oldFirstPlaceL3Name = docSnapThreeFirst.data().clubName;
 
@@ -269,7 +276,7 @@ export const updatePoints = async function(clubUsername, oAttendance, nAttendanc
           
           await updateDoc(doc(db, "metadata", "L3first"), {
             clubName: clubUsername,
-            points: newTotal,
+            points: localPointTotal,
           });
           await updateDoc(doc(db, "metadata", "L3second"), {
             clubName: oldFirstPlaceL3Name,
@@ -281,36 +288,36 @@ export const updatePoints = async function(clubUsername, oAttendance, nAttendanc
           });
 
         }
-        else if(newTotal > pointL3Second){
+        else if(localPointTotal > pointL3Second){
           var oldSecondPlaceL3 = docSnapThreeSecond.data().points;
           var oldSecondPlaceL3Name = docSnapThreeSecond.data().clubName;
           
           await updateDoc(doc(db, "metadata", "L3second"), {
             clubName: clubUsername,
-            points: newTotal,
+            points: localPointTotal,
           });
           await updateDoc(doc(db, "metadata", "L3third"), {
             clubName: oldSecondPlaceL3Name,
             points: oldSecondPlaceL3,
           });
         }
-        else if(newTotal == pointL3Second){
+        else if(localPointTotal == pointL3Second){
           var oldSecondPlaceL3 = docSnapThreeSecond.data().points;
           var oldSecondPlaceL3Name = docSnapThreeSecond.data().clubName;
           
           await updateDoc(doc(db, "metadata", "L3second"), {
             clubName: clubUsername,
-            points: newTotal,
+            points: localPointTotal,
           });
           await updateDoc(doc(db, "metadata", "L3third"), {
             clubName: oldSecondPlaceL3Name,
             points: oldSecondPlaceL3,
           });
         }
-        else if(newTotal >= pointL3Third){
+        else if(localPointTotal >= pointL3Third){
           await updateDoc(doc(db, "metadata", "L3third"), {
             clubName: clubUsername,
-            points: newTotal,
+            points: localPointTotal,
           });
         }
       }

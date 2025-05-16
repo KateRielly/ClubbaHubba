@@ -80,7 +80,21 @@
         </div>
    </div>
     
-    
+    <!-- Hidden Modal for Delete Confirmation -->
+    <div id="eventInfoModal" class="eventInfoModal">
+        <div class="eventInfoModalContent">
+        <p id="meetInfoPopUp">Meeting information:</p>
+        <p id="clubPopUp">Club: </p>
+        <p id="datePopUp">Date: </p>
+        <p id="timePopUp">Time: </p>
+        <p id="locationPopUp">Location: </p>
+        <p id="descriptionPopUp">Description: </p>
+        <button id="goToClub" class="confbtn"  onclick="location.replace('clubDash.html');">Go to club page</button>
+        <br>
+        <button id="confCancelDelete" class="confbtn" onclick="document.getElementById('eventInfoModal').style.display = 'none';">Close</button>
+        </div>
+    </div>
+    <!-- END OF DELETE CONF MODAL!!!! -->
     
     <!-- Calendar Section -->
     <section id="calendar">  

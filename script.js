@@ -54,6 +54,7 @@ export const checkLogin = async function(){
 export const displayClubsInDanger = async function() {
   console.log("THIS IS BEING CALLED!!!!")
   var clubsInDangerDiv = document.getElementById("clubsInDangerDiv");
+  console.log(clubsInDangerDiv);
   const databaseItems = await getDocs(collection(db, "clubs"));
 
   

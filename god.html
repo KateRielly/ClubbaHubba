@@ -14,7 +14,6 @@
            checkLogin();
            displayClubsInDanger();
     </script> 
-    </script> 
 </head>
 <body>
     <!-- creates the header box and the title, inside the box -->
@@ -24,14 +23,12 @@
 
     <!-- Creates a bar bellow hearder box with nav buttons -->
     <div class="nav">
-        <button class="button onclick="location.replace('index.html');">Home</button>
-        <button class="button">Calendar</button>
-        <button class="button">Club Directory</button>
-        <button class="button" onclick="location.replace('notifs.html');" >Notifications </button>
+        <button class="button" onClick="location.replace('index.html');">Home</button>
+        <button class="button" onClick = "location.replace('clubDirectory.html');">Club Directory</button>
     </div>
 
     <div class="adminWrap">
-    <div class="clubsInDanger">Clubs in danger!</div>
+    <div class="clubsInDanger" id="clubsInDangerDiv">Clubs in danger!</div>
     <div class="mainAdminBox">
         <div class="search">Search bar
             <img class="searchIcon" src="images/search-icon.png" alt="searchIcon">

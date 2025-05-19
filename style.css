@@ -304,9 +304,9 @@ revealing background image in logos */
 }
 
 .clubsBox {
-    display: flex; padding: 20px;
+    display: flex; padding: 10px; padding-left: 50px;
     background-color: rgb(141, 13, 24);  
-    justify-content: space-between; 
+    justify-content: left; 
     flex-direction: row;   
     flex-wrap: wrap;
 }
@@ -314,8 +314,9 @@ revealing background image in logos */
 .clubButton{
     cursor: pointer;
     padding-top: 4px; padding-bottom: 4px;
-    margin: 2px;
-    width: 23%;
+    margin: 8px;
+    margin-bottom: 8px;
+    width: 18%;
     background-color: rgb(255, 255, 255);
     border-color: transparent; border-radius: 7px;
     font-family: 'Times New Roman', Times, serif; font-size: 20px;

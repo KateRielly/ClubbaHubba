@@ -89,7 +89,7 @@ export const displayClubsInDanger = async function() {
     clubInDanger.onclick = function() {
       location.replace("clubDash.html");
       sessionStorage.setItem("club", club.data().username);
-      //this does somehting when the club tile is clicked
+      //This does something when the club tile is clicked
       }
     clubsInDangerDiv.appendChild(clubInDanger);
   });

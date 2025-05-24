@@ -124,6 +124,8 @@ resid=zed to fit nicly beside the calendar-- */
 .calendar {
     display: flex;
     flex-direction: column;
+    height: 96vh;
+    margin-bottom: 10px;
     overflow: scroll;
     position: relative; margin-left: 2%; width: 96%;
     background-color: rgb(237, 237, 237); color: rgb(141, 13, 24);
@@ -186,7 +188,7 @@ resid=zed to fit nicly beside the calendar-- */
 
 .days {
     /* Space between calendar days */
-    gap: 4px; height: 550px; padding-bottom: 5px;
+    gap: 4px; height: 510px; padding-bottom: 5px;
 }
 
 .actualday{
@@ -908,5 +910,3 @@ h4{
     text-align: center;
     font-style: normal;
   }
-  
-  

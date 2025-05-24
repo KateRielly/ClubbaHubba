@@ -8,12 +8,14 @@
     <script type="module" src="script.js"></script>
     <title>clubba hubba</title>
     <script type="module">
-         import {checkLogin, displayClubsInDanger} from './script.js';
-           window.checkLogin = checkLogin;
-           window.displayClubsInDanger = displayClubsInDanger;
-           checkLogin();
-           displayClubsInDanger();
-    </script> 
+        import { checkLogin, displayClubsInDanger, renderAdminClubInfo } from './script.js';
+        window.checkLogin = checkLogin;
+        window.displayClubsInDanger = displayClubsInDanger;
+        window.renderAdminClubInfo = renderAdminClubInfo;
+        renderAdminClubInfo();
+        checkLogin();
+        displayClubsInDanger();
+    </script>
 </head>
 <body>
     <!-- creates the header box and the title, inside the box -->
@@ -30,10 +32,29 @@
     <div class="adminWrap">
     <div class="clubsInDanger" id="clubsInDangerDiv">Clubs in danger!</div>
     <div class="mainAdminBox">
-        <div class="search">Search bar
-            <img class="searchIcon" src="images/search-icon.png" alt="searchIcon">
+        <div class="search-container">
+            <div id="searchUsers" class="instant-search">
+              <div class="instant-search__input-container">
+                <input class="instant-search__input" type="text" spellcheck="false" placeholder="Search For Club Here"/>
+                <!-- add your icon here -->
+                <img class="instant-search__icon" src="images/search-icon.png" alt="search"/>
+              </div>
+              <!-- results injected here -->
+            </div>
+          </div>
+        <div class="adminClubInfoWrapper">
+            <div class="adminClubName" id="adminClubName">Club Name</div>
+            <div class="adminClubInfo">
+                <div class="adminInfoSplit">
+                    <div class="adminaboutClub" id="adminaboutClub">Club information</div>
+                    <div class="adminNextMeeting" id="adminNextMeeting">Next Meeting</div>
+                </div>
+                <div class="adminInfoSplit">
+                    <div class="adminInDangerDiv" id="adminInDangerDiv"></div>
+                    <div class="adminPastMeetings" id="adminPastMeetings">Past Meetings</div>
+                </div>
+            </div>
         </div>
-        <div class="adminClubInfo">club info box</div>
     </div>
     </div>
 

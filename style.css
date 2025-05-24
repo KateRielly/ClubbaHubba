@@ -357,7 +357,24 @@ revealing background image in logos */
 h4{
     font-weight: normal;
 }
+.hTwoCDash {
+    background-image: url(images/grisham.png); /* Replace with your actual image path */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgb(141, 13, 24);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    margin: -15px -15px 15px -15px; /* Pulls heading outside padding */
+    padding: 12px 20px;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
 
+.underline{
+    text-decoration: underline;
+}
 
 .clubInfoBox:hover {
     background-color: rgba(209, 208, 208, 0.42);
@@ -660,38 +677,98 @@ h4{
     margin-left: 0;
     width: 80%;
     border-radius: 4px;
-    height: 75vh;
+    height: 85vh;
+    overflow: scroll;
 }
 
 .clubsInDanger{
     background-color: rgba(152, 152, 152, 0.44);
     padding: 5px; margin: 30px; width: 20%;
     border-radius: 4px;
-    height: 75vh;
+    height: 85vh;
     align-items: center;
     justify-content: center;
     text-align: center;
 }
 
-.search{
-    margin: 10px;
-    margin-bottom: 0px;
-    display: flex;
-    background-color: rgb(255, 255, 255);
+.adminClubInfoWrapper{
+    padding-top: 15px;
+    text-align: center;
+    background-color: rgb(255, 255, 255,.75);
     border-radius: 10px;
-    height: 30px;
+    height: 74vh;
     align-items: center;
     justify-content: center;
+    margin: 10px;
 }
 
 .adminClubInfo{
+    text-align: left;
     display: flex;
-    margin: 10px;
-    background-color: rgb(255, 255, 255,.75);
-    border-radius: 10px;
-    height: 92%;
-    align-items: center;
+    flex-direction: row;
     justify-content: center;
+    margin-top: 10px;
+}
+
+.adminInfoSplit{
+    display: flex;
+    flex-direction: column;
+    height: 98%;
+    background-color: transparent;
+    margin: 2px;
+    width: 49%;
+}
+
+.adminClubName{
+    font-weight: bold; color: #2C3E50;
+    font-size: 30px;
+    margin: 2px;
+}
+.adminaboutClub{
+    margin: 2px;
+    background-color: lightgray;
+    padding: 15px;
+    border-radius: 15px;
+    height: 37vh;
+
+}
+.adminNextMeeting{
+    margin: 2px;
+    background-color: lightgray;
+    border-radius: 15px;
+    height: 25vh;
+}
+.adminInDangerDiv{
+    margin: 2px;
+    background-color: lightgray;
+    padding: 10px;
+    border-radius: 15px;
+    height: 14vh;
+}
+.adminPastMeetings{
+    margin: 2px;
+    padding: 5px;
+    background-color: lightgray;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    height: 48vh;
+    overflow: scroll;
+}
+
+.DangerNotifWrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.DangerNotifDiv{
+    background-color: white;
+    padding: 10px;
+    text-align: center;
+    font-size: 30px;
+    width: 75%;
+    border-radius: 20px;
 }
 
 .searchIcon{
@@ -717,3 +794,119 @@ h4{
 .dangerButton:hover{
     background-color:rgb(141, 13, 24);
 }
+
+/* SEARCH BAR STUFF */
+.instant-search {
+    position: relative;
+    max-width: 300px;
+    margin: 1rem auto;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+  }
+  
+  /* input wrapper: moderate rounding, original padding */
+  .instant-search__input-container {
+    position: relative;
+    display: flex;
+    height: 20px;
+    align-items: center;
+    background-color: #eeeeee;
+    border-radius: 40px; /* moderate oval shape */
+    padding: 6px 10px;  /* keep the bar from growing too tall */
+    transition: background 0.15s, box-shadow 0.15s;
+  }
+  
+  .instant-search__input-container:focus-within {
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(141, 13, 24, 0.5);
+  }
+  
+  /* text input: leave original left padding for icon */
+  .instant-search__input {
+    flex: 1;
+    padding: 4px 6px 4px 32px; /* enough room for larger icon */
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  /* icon: larger and square, no impact on input height */
+  .instant-search__icon {
+    position: absolute;
+    left: 8px;
+    width: 24px;              /* larger square size */
+    height: 24px;
+    object-fit: contain;
+    pointer-events: none;
+  }
+  
+  /* loading bar indicator */
+  .instant-search--loading::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    height: 2px;
+    background: rgb(141, 13, 24);
+    border-radius: 5px;
+    animation: searchIndicator 0.5s infinite ease-in-out;
+  }
+  @keyframes searchIndicator {
+    0%   { width: 15%; }
+    50%  { width: 100%; }
+    100% { width: 15%; }
+  }
+  
+  /* results dropdown */
+  .instant-search__results-container {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 10px;       /* match input */
+    max-height: 200px;
+    overflow-y: auto;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.1s, opacity 0.1s;
+    z-index: 10;
+  }
+  
+  .instant-search__results-container--visible {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  /* each result item */
+  .instant-search__result {
+    display: block;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    color: #333;
+    text-decoration: none;
+    border-bottom: 1px solid #eeeeee;
+    transition: background 0.15s;
+  }
+  
+  .instant-search__result:last-child {
+    border-bottom: none;
+  }
+  
+  .instant-search__result:hover {
+    background-color: #eeeeee;
+  }
+  
+  /* “No clubs found” message */
+  .instant-search__no-results {
+    padding: 10px;
+    font-size: 0.9rem;
+    color: rgb(141, 13, 24);
+    font-weight: bold;
+    text-align: center;
+    font-style: normal;
+  }
+  
+  

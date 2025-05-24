@@ -1,258 +1,82 @@
-import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged , signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getFirestore, collection, getDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
-const firebaseConfig = {
-    apiKey: "AIzaSyAH3oWF9S-ePd0352Ca-TdE5cu6oinzlXo",
-    authDomain: "softwareengineering-94854.firebaseapp.com",
-    projectId: "softwareengineering-94854",
-    storageBucket: "softwareengineering-94854.appspot.com",
-    messagingSenderId: "565847408909",
-    appId: "1:565847408909:web:9e116dae6ede6b965bb044"
-  };
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+// TODO: import libraries for Cloud Firestore Database
+// https://firebase.google.com/docs/firestore
+import { getFirestore, collection, addDoc, getDocs,getDoc, doc, updateDoc, deleteDoc, setDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+import {updatePoints} from "./leaderboardScore.js";
 
+const firebaseConfig = {
+apiKey: "AIzaSyAH3oWF9S-ePd0352Ca-TdE5cu6oinzlXo",
+authDomain: "softwareengineering-94854.firebaseapp.com",
+projectId: "softwareengineering-94854",
+storageBucket: "softwareengineering-94854.appspot.com",
+messagingSenderId: "565847408909",
+appId: "1:565847408909:web:9e116dae6ede6b965bb044"
+};
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
-
-// ——————LOGIN CODE TO VERIFY THE ADMIN IS LOGED IN—————//
-export const login =  function(email, password){
-    signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      // Signed in 
-      const user = userCredential.user;
-      location.replace('god.html');
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-    });
-  }
-
-  export const verification = async function(){
-    const user = auth.currentUser;
-    if (user) {
-      return;
-      // User is signed in, see docs for a list of available properties
-      // https://firebase.google.com/docs/reference/js/auth.user
-      // ...
-    } else {
-      // No user is signed in.
-      location.replace('login.html');
-    }
-  }
-
-export const checkLogin = async function(){
-  onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      // User is signed in, see docs for a list of available properties
-      // https://firebase.google.com/docs/reference/js/auth.user
-            window.location.href = "login.html";
-      // ...
-    } 
-  });
-}//I WANT TO MAKE THIS DO SOMETING ELSE CASUE I NEED IT TO WORK ACROSS THE WEBSITE/APP!!!
-
-
-// ————————  CLUBS IN DANGER SIDE BAR LIST CODE!!!! ———— //
-export const displayClubsInDanger = async function() {
-  console.log("displayClubsInDanger IS BEING CALLED")
-  var clubsInDangerDiv = document.getElementById("clubsInDangerDiv");
-  const databaseItems = await getDocs(collection(db, "clubs"));
-
-  
-  const todaysDate = new Date();
-  // Calculate the date for two months ago
-  const twoMonthsAgo = new Date(todaysDate);
-  twoMonthsAgo.setMonth(todaysDate.getMonth() - 2);
-  console.log(twoMonthsAgo);
-  
-  const clubsInDanger = [];
-  
-  // Loop through database items to find clubs that haven't met in the last two months
-  databaseItems.forEach(club => {
-    const data = club.data();
-    const lastMeetingTimestamp = data.lastMeeting;
-  
-    // Convert Firestore Timestamp to JavaScript Date
-    const lastMeetingDate = lastMeetingTimestamp.toDate();
-  
-    if (lastMeetingDate <= twoMonthsAgo) {
-      clubsInDanger.push(club);
-    }
-  });
-
-  // Render clubs in danger in the div
-  clubsInDanger.sort((a, b) => {
-    const nameA = a.data().clubName.toLowerCase();
-    const nameB = b.data().clubName.toLowerCase();
-    return nameA.localeCompare(nameB);
-  });
-  
-  clubsInDanger.forEach(club => {
-    var clubInDanger = document.createElement("button");
-    clubInDanger.classList.add('dangerButton');
-    clubInDanger.innerHTML=club.data().clubName;
-    clubInDanger.onclick = function() {
-      sessionStorage.setItem("adminClub", club.data().username);
-      location.reload();
-      }
-    clubsInDangerDiv.appendChild(clubInDanger);
-  });
+//changes the sessionStorage to what is in the parameter
+export async function setClub(clubName){
+//makes a variable called showClub, set its value to be the parameter
+sessionStorage.setItem("showClub", clubName);
+console.log(sessionStorage.getItem("showClub"));
 }
 
-//—————————THIS IS MY SEARCH BAR CODE!!! —————————————//
-// Make an empty list to store all the clubs from the database
-let clubList = [];
+export const showClubs = async function(){
+const databaseItems = await getDocs(collection(db, "clubs"));
+var names = document.getElementById("clubs");
+names.innerHTML = "";
+databaseItems.forEach((item) => {
+// for(item.data() in data){
 
-// This function grabs the clubs from the Firestore database and adds them to the clubList array
-export const createClubList = async function () {
-  const databaseItems = await getDocs(collection(db, "clubs")); // Get all the club documents from Firestore
-  const names = document.getElementById("clubs");
-  if (names) names.innerHTML = ""; // If there's a "clubs" element, clear whatever was in it
-
-  // Loop through all the club data we got from Firestore
-  databaseItems.forEach((item) => {
-    const clubName = item.data().clubName;
-    const clubUsername = item.data().username;  // Get the username from Firestore
-    clubList.push({ clubName, clubUsername });      // Store as object with both values
-  });
-};
-
-// This class handles the instant search functionality (like a search bar that shows results as you type)
-class InstantSearch {
-  constructor(instantSearch, options) {
-    this.options = options;
-    this.elements = {
-      main: instantSearch, // Main container for the search
-      input: instantSearch.querySelector(".instant-search__input"), // The actual search input box
-      resultsContainer: document.createElement("div") // A div to hold the search results
-    };
-
-    // Style the results container and add it under the search input
-    this.elements.resultsContainer.classList.add("instant-search__results-container");
-    this.elements.main.appendChild(this.elements.resultsContainer);
-    this.addListeners(); // Set up the event listeners (stuff like typing and focusing)
-  }
-
-  addListeners() {
-    let delay; // Used to create a little pause before running the search (so it’s not too fast)
-
-    this.elements.input.addEventListener("input", () => {
-      clearTimeout(delay); // Stop the previous timer if you're still typing
-      const query = this.elements.input.value; // Get what the user typed
-
-      // Wait 300ms before searching (like a tiny delay so we’re not searching every single keystroke)
-      delay = setTimeout(() => {
-        if (query.length < 1) {
-          this.populateResults([]); // If the search box is empty, show nothing
-          return;
-        }
-
-        // Search through the clubList and show the matching results
-        this.performSearch(query).then(results => {
-          this.populateResults(results);
-        });
-      }, 300);
-    });
-
-    // When the input is focused (clicked into), show the results box
-    this.elements.input.addEventListener("focus", () => {
-      this.elements.resultsContainer.classList.add("instant-search__results-container--visible");
-    });
-
-    // When you click away from the input, hide the results after a short delay
-    this.elements.input.addEventListener("blur", () => {
-      setTimeout(() => {
-        this.elements.resultsContainer.classList.remove("instant-search__results-container--visible");
-      }, 200);
-    });
-  }
-
-  // This puts the search results into the DOM
-  populateResults(results) {
-    this.elements.resultsContainer.innerHTML = ""; // Clear any old results
-
-    if (results.length === 0) {
-      // If nothing matches the search, show a "no results" message
-      const noResultDiv = document.createElement("div");
-      noResultDiv.classList.add("instant-search__no-results");
-      noResultDiv.textContent = "No clubs found.";
-      this.elements.resultsContainer.appendChild(noResultDiv);
-      return;
-    }
-
-    // If there are matches, add each one to the results container
-    for (const result of results) {
-      this.elements.resultsContainer.appendChild(this.createResultElement(result));
-    }
-  }
-
-  createResultElement(result) {
-    const anchor = document.createElement("a");
-    anchor.classList.add("instant-search__result");  
-    anchor.innerHTML = this.options.templateFunction(result);
-  
-    anchor.addEventListener("click", (event) => {
-      event.preventDefault(); // Prevent default link behavior
-      
-      // Save the club username to session storage
-      // Assuming 'result' has a property 'clubUsername' holding that value
-      sessionStorage.setItem('adminClub', result.clubUsername);
-      // Reload the current page
-      location.reload();
-    });
-  
-    return anchor;
-  }
-  
-
-  // This function actually filters the clubList to find matches based on what was typed
-  performSearch(query) {
-    const lowerQuery = query.toLowerCase(); // Make search case-insensitive
-    const results = clubList
-    .filter(club => club.clubName.toLowerCase().includes(lowerQuery))
-    .map(club => ({ clubName: club.clubName, clubUsername: club.clubUsername })); // Return full objects
-    return Promise.resolve(results); // Return the results as a promise
-  }
+var clubTile = document.createElement("button");
+clubTile.classList.add('clubButton');
+clubTile.innerHTML=item.data().clubName;
+clubTile.onclick = function() {
+location.replace("clubDash.html");
+sessionStorage.setItem("club", item.data().username);
+//this does somehting when the club tile is clicked
 }
-
-// Run this after all the clubs are loaded from the database
-createClubList().then(() => {
-  const searchUsers = document.querySelector("#searchUsers"); // Find the search box in the HTML
-  if (searchUsers) {
-    // Start the InstantSearch on that element
-    new InstantSearch(searchUsers, {
-      templateFunction: result => `<div class="instant-search__title">${result.clubName}</div>` // Format for each result
-    });
-  }
+names.appendChild(clubTile);
+// }
 });
+}
 
-// ———— decided to make the admin club info box an onload 
-// function cause im not going to push my luck ——————///
 
-export async function renderAdminClubInfo() {
-  var clubName = document.getElementById("adminClubName");
+
+
+// -- dispays each clubs information after getting selected/clicked in theclub dashboard page --
+export const displayClubInfo = async function () {
+  console.log("displayClubInfo triggered");
+
+  // gets the club name that was clicked from session storage
+  var parentName = sessionStorage.getItem("club");
+
+  // pulling the specific club from database
+  const parentDocRef = doc(db, "clubs", parentName);
+  const clubDoc = await getDoc(parentDocRef);
+
+  // gets the text in the header to then clear (default is club dash)
+  var clubName = document.getElementById("clubName");
   clubName.innerHTML = "";
-  var clubInfo = document.getElementById("adminaboutClub");
-  clubInfo.innerHTML="";
 
-  var adminClub = sessionStorage.getItem('adminClub');
-  if (adminClub) {
+  // gets the elements to append things to from HTML and sets their text
+  var bio = document.getElementById("bio");
+  bio.innerHTML = "<h2 class='underline'>About Us</h2>";
 
-    const parentDocRef = doc(db, "clubs", adminClub);
-    const clubDoc = await getDoc(parentDocRef);
-    
-    // sets header to the club name
-    clubName.innerHTML = clubDoc.data().clubName;
-  
-  var clubUsername = document.createElement("h4");
-  clubUsername.innerHTML =  `<strong>Username:</strong> ${adminClub}`;
+  var quickFacts = document.getElementById("quickFacts");
+  quickFacts.innerHTML = "<h2 class='underline'>Club Information</h2>";
 
-  var clubPassword = document.createElement("h4");
-  clubPassword.innerHTML =  `<strong>Password:</strong> ${clubDoc.data().password}`;
+  // sets header to the club name
+  clubName.innerHTML = clubDoc.data().clubName;
 
+  // sets/creates fields and assigns Firebase values to them
   var clubBio = document.createElement("h4");
-  clubBio.innerHTML =  `<strong>Bio:</strong> ${clubDoc.data().bio}`;
+  clubBio.innerHTML = clubDoc.data().bio;
+
+  var dateFounded = document.createElement("h4");
+  dateFounded.innerHTML = `<strong>Date founded:</strong> ${clubDoc.data().yearFounded}`;
 
   var meetingPlan = document.createElement("h4");
   meetingPlan.innerHTML = `<strong>Meeting frequency:</strong> ${clubDoc.data().meetingTime}`;
@@ -261,61 +85,42 @@ export async function renderAdminClubInfo() {
   numMembers.innerHTML = `<strong>Number of members:</strong> ${clubDoc.data().memberCount}`;
 
   var leaderNames = document.createElement("h4");
-  leaderNames.innerHTML = `<strong>Leaders:</strong> ${clubDoc.data().clubLeaders.join(", ")}`;
+  leaderNames.innerHTML = `<strong>Club Leaders:</strong> ${clubDoc.data().clubLeaders.join(", ")}`;
 
   console.log("read commands");
 
   // appends created objects to the html
-  clubInfo.appendChild(clubUsername);
-  clubInfo.appendChild(clubPassword);
-  clubInfo.appendChild(leaderNames);
-  clubInfo.appendChild(clubBio);
-  clubInfo.appendChild(meetingPlan);
-  clubInfo.appendChild(numMembers);
+  bio.appendChild(clubBio);
+  quickFacts.appendChild(leaderNames);
+  quickFacts.appendChild(dateFounded);
+  quickFacts.appendChild(meetingPlan);
+  quickFacts.appendChild(numMembers);
+
+  displayMeetingInfo(clubDoc.id);
+  return;
+}
 
 
-  // —————RIGHT SIDE OF ADMIN CLUB INFO PAGE—————//
-  var adminInDangerDiv = document.getElementById("adminInDangerDiv");
-  adminInDangerDiv.innerHTML="";
-  var InDagerNoticeWrapper = document.createElement("div");
-  InDagerNoticeWrapper.className = "DangerNotifWrapper"
-  var InDagerNotice = document.createElement("div");
-  InDagerNotice.innerHTML =  "haha";
-  InDagerNotice.className = "DangerNotifDiv"
-  if(await isClubInDanger(adminClub)){
-    InDagerNotice.innerHTML =  "Not Active";
-    InDagerNotice.style.backgroundColor = 'rgba(224, 20, 37, 0.766)';
-    InDagerNotice.style.color = 'white'
 
-    var inDangerMessage = document.createElement("h4");
-    inDangerMessage.innerHTML =  "This club has not met in over two months...";
-  }
-  else{
-    InDagerNotice.innerHTML =  "Active";
-    InDagerNotice.style.backgroundColor = 'rgb(71,160,37)';
+async function displayMeetingInfo(id){
+  console.log("sorting dates!");
 
-    var inDangerMessage = document.createElement("h4");
-    inDangerMessage.innerHTML =  "This club has met within two months. This means it is curently active and there is no casue for concern!";
-  }
-
-  adminInDangerDiv.appendChild(InDagerNoticeWrapper);
-  InDagerNoticeWrapper.appendChild(InDagerNotice);
-  adminInDangerDiv.appendChild(inDangerMessage);
-  } 
-  
-  else {
-    console.log("No adminClub set in session storage yet.");
-  }
-  // ————— Left side future meeting div!!!———————//
-  const parentDocRef = doc(db, "clubs", adminClub);
-  const clubDoc = await getDoc(parentDocRef);
-  const clubID = clubDoc.id;
-  const docRef = doc(db, "clubs", clubID);
-  const meetingsCollectionRef = collection(docRef, "all-meetings");
-  const databaseItems = await getDocs(meetingsCollectionRef);
-  //push aproprate meetings to each array (past and future)
   const pastMeetings = [];
   const futureMeetings = [];
+
+  // Gets today's date to compare meetings.
+  let today = new Date();
+
+  // Reference to the club document using the passed id.
+  const docRef = doc(db, "clubs", id);
+
+  // Get a reference to the subcollection "all-meetings" within the club document.
+  const meetingsCollectionRef = collection(docRef, "all-meetings");
+
+  // Fetch all the meeting documents from the subcollection.
+  const databaseItems = await getDocs(meetingsCollectionRef);
+
+  // Loop through each meeting fetched from Firestore
   databaseItems.forEach((meeting) => {
     // Create a meeting object with necessary data.
     let meet = {
@@ -325,8 +130,7 @@ export async function renderAdminClubInfo() {
       attendance: meeting.data().attendance,
       isAnEvent: meeting.data().isAnEvent
     };
-    // Gets today's date to compare meetings.
-    let today = new Date();
+
     // Check if the meeting's date is in the future or past and push to appropriate array.
     if(meet.date > today){
       futureMeetings.push(meet); // Future meeting
@@ -335,109 +139,390 @@ export async function renderAdminClubInfo() {
       pastMeetings.push(meet); // Past meeting
     }
   });
+  
   // Sort both future and past meetings by date using helper function (compareDates).
   pastMeetings.sort(compareReverseDates);
   futureMeetings.sort(compareDates);
 
-  var nextMeet = document.getElementById("adminNextMeeting"); // Get reference to "adminNextMeeting" section.
-  nextMeet.innerHTML="";
-  var meetingDiv = document.createElement("div");
-  var meetingInfo = document.createElement("div");
-  // Add appropriate classes for styling
-  meetingInfo.classList.add('meetingBox');
-  meetingDiv.classList.add('meetingDiv');
-  meetingDiv.appendChild(meetingInfo);
-  const nextMeeting = futureMeetings[0];
+  var outlook = document.getElementById("outlook"); // Get reference to "outlook" section.
+  var meetingLog = document.getElementById("meetingLog"); // Get reference to "meetingLog" section.
 
-if (nextMeeting) {
-  let meetingType = nextMeeting.isAnEvent ? "Event" : "Meeting";
+  // Loop through future meetings and create div elements for each.
+  futureMeetings.forEach((meeting) => {
+    var meetingDiv = document.createElement("div");
+    var meetingInfo = document.createElement("div");
+    var editMeetingDiv = document.createElement("div");
+    
+    // Create and style button for deleting the meeting
+    var editbutton = document.createElement("button");
+    editbutton.innerHTML = "Delete";
+    
+    // Add appropriate classes for styling
+    meetingInfo.classList.add('meetingBox');
+    editMeetingDiv.classList.add('editMeetingDiv');
+    meetingDiv.classList.add('meetingDiv');
+    editbutton.classList.add('meetingEdit');
 
-  meetingInfo.innerHTML = `
-    <h3>Next ${meetingType}</h3>
-    <p><strong>Date:</strong> ${nextMeeting.date.toLocaleDateString()}</p>
-    <p><strong>Time:</strong> ${nextMeeting.date.toLocaleTimeString()}</p>
-    <p><strong>Description:</strong> ${nextMeeting.description}</p>
-  `;
+    // When clicked, it triggers the showDeleteModal with meetingID
+    editbutton.onclick = function() {
+      showDeleteModal(meeting.meetingID, id); 
+    };
 
-  nextMeet.appendChild(meetingDiv);
-} 
-else {
-  meetingInfo.innerHTML = `<p>No upcoming meetings found.</p>`;
-  nextMeet.appendChild(meetingDiv);
-  nextMeet.style.display = "flex";
-  nextMeet.style.justifyContent = "center";
-  meetingInfo.style.textAlign = "center";
-}
-
-var pastMeetingLog = document.getElementById("adminPastMeetings");
-pastMeetingLog.innerHTML = "";
-pastMeetings.forEach((pastMeeting) => {
-  var pastMeetingDiv = document.createElement("div");
-  var pastMeetingInfo = document.createElement("div");
-  pastMeetingInfo.classList.add('meetingBox');
-  pastMeetingDiv.classList.add('meetingDiv');
+    // Append button and info to the meeting div
+    if(sessionStorage.getItem("canEdit") == "true"){
+      editMeetingDiv.appendChild(editbutton);
+    }
+    meetingDiv.appendChild(meetingInfo);
+    meetingDiv.appendChild(editMeetingDiv);
 
   var meetingType = "Meeting";
-  if (pastMeeting.isAnEvent == true){
-    meetingType = "Event";
-  }
+    if (meeting.isAnEvent == true){
+      meetingType = "Event";
+    }
 
-  console.log(pastMeeting);
-  // Populate meeting details for past meetings
-  pastMeetingInfo.innerHTML = `
-    <p>Date: ${pastMeeting.date.toLocaleDateString()}</p>
-    <p>Time: ${pastMeeting.date.toLocaleTimeString()}</p>
 
-    <div class="infoContainer">
-      <span>Attendance:</span>
-      <span id="attendance-${pastMeeting.meetingID}">${pastMeeting.attendance}</span>
-    </div>
+    // Populate meeting details
+    meetingInfo.innerHTML = `
+      <p>Date: ${meeting.date.toLocaleDateString()}</p>
+      <p>Time: ${meeting.date.toLocaleTimeString()}</p>
+      <p>Type: ${meetingType}<p>
+      <p>Meeting info: ${meeting.description}</p>
+    `;
 
-    <div class="infoContainer">
-      <span>Type:</span>
-      <span id="type-${pastMeeting.meetingID}">${meetingType}</span>
-    </div>
-    
-    <div class="infoContainer">
-      <span>Meeting recap:</span>
-      <span id="recap-${pastMeeting.meetingID}">${pastMeeting.description}</span>
-    </div>
-  `;
+    // Append the meeting div to the "outlook" section
+    outlook.appendChild(meetingDiv);
+  });
 
-  // Append the meeting div to the "meetingLog" section
-  pastMeetingDiv.appendChild(pastMeetingInfo); // This was missing
-  pastMeetingLog.appendChild(pastMeetingDiv);
-});
-}
-
-// ————— Helper Function for displeying the meeting info ————//
-async function isClubInDanger(username) {
-  const parentDocRef = doc(db, "clubs", username);
-    const clubDoc = await getDoc(parentDocRef);
-
-  const todaysDate = new Date();
-  const twoMonthsAgo = new Date(todaysDate);
-  twoMonthsAgo.setMonth(todaysDate.getMonth() - 2);
-  console.log(twoMonthsAgo);
-
-  const lastMeetingTimestamp = clubDoc.data().lastMeeting;
-  const lastMeetingDate = lastMeetingTimestamp.toDate();
-  console.log(lastMeetingDate);
+  // Add button to register a new meeting
+  var addEventDiv = document.createElement("div");
+  var addButton = document.createElement("button");
+  addEventDiv.classList.add('addEventDiv');
+  addButton.classList.add('meetingEdit');
+  addButton.classList.add('addButton');
+  addButton.innerHTML = "register new meeting";
   
-  if (lastMeetingDate <= twoMonthsAgo) {
-    console.log("true");
-    return true;
+  // Append the "add new meeting" button
+  if(sessionStorage.getItem("canEdit") == "true"){
+    addEventDiv.appendChild(addButton);
   }
+  outlook.appendChild(addEventDiv);
 
-  console.log("False");
-  return false;
+    addButton.onclick = function() {
+    showEditModal(id); 
+  };
+
+  // Loop through past meetings and create div elements for each.
+  pastMeetings.forEach((meeting) => {
+    var meetingDiv = document.createElement("div");
+    var meetingInfo = document.createElement("div");
+    var editMeetingDiv = document.createElement("div");
+    var editbutton = document.createElement("button");
+    var saveButton = document.createElement("button");
+    var cancelButton = document.createElement("button");
+    var deleteButton = document.createElement("button");
+    deleteButton.innerHTML = "Delete";
+
+    // Set buttons to be hidden by default.
+    saveButton.style.display = "none";
+    cancelButton.style.display = "none";
+    editbutton.innerHTML = "Edit";
+    saveButton.innerHTML = "Save";
+    cancelButton.innerHTML = "Cancel";
+
+    // Add appropriate classes for styling
+    meetingInfo.classList.add('meetingBox');
+    editMeetingDiv.classList.add('editMeetingDiv');
+    meetingDiv.classList.add('meetingDiv');
+    editbutton.classList.add('meetingEdit');
+    saveButton.classList.add('meetingEdit');
+    deleteButton.classList.add('meetingEdit');
+    cancelButton.classList.add('meetingEdit');
+    saveButton.classList.add('meetingEditConf');
+    cancelButton.classList.add('meetingEditConf');
+
+    // Set unique ids for buttons using meetingID
+    editbutton.id = `editButton-${meeting.meetingID}`;
+    saveButton.id = `saveButton-${meeting.meetingID}`;
+    cancelButton.id = `cancelButton-${meeting.meetingID}`;
+
+    // Handle the "Edit" button click
+    editbutton.onclick = function() {
+      // Call the edit function with meetingID and club ID
+      editMeetingInfo(meeting.meetingID, id); 
+      editbutton.style.display = "none"; // Hide Edit button
+      deleteButton.style.display = "none"
+      saveButton.style.display = "flex"; // Show Save button
+      cancelButton.style.display = "flex"; // Show Cancel button
+    };
+
+    // Handle the "Cancel" button click
+    cancelButton.onclick = function() {
+      location.reload(); // Reloads the page to revert changes.
+    };
+
+    deleteButton.onclick = function() {
+      showDeleteModal(meeting.meetingID,id); 
+    };
+
+    // Append the buttons and meeting info div
+    if(sessionStorage.getItem("canEdit") == "true"){
+      editMeetingDiv.appendChild(editbutton);
+      editMeetingDiv.appendChild(deleteButton);
+      editMeetingDiv.appendChild(saveButton);
+      editMeetingDiv.appendChild(cancelButton);  
+    }
+
+    
+    meetingDiv.appendChild(meetingInfo);
+    if(sessionStorage.getItem("canEdit") == "true"){
+      meetingDiv.appendChild(editMeetingDiv);
+    }
+
+        var meetingType = "Meeting";
+    if (meeting.isAnEvent == true){
+      meetingType = "Event";
+    }
+
+
+    // Populate meeting details for past meetings
+    meetingInfo.innerHTML = `
+      <p>Date: ${meeting.date.toLocaleDateString()}</p>
+      <p>Time: ${meeting.date.toLocaleTimeString()}</p>
+
+      <div class="infoContainer">
+        <span>Attendance:</span>
+        <span id="attendance-${meeting.meetingID}">${meeting.attendance}</span>
+      </div>
+
+      <div class="infoContainer">
+        <span>Type:</span>
+        <span id="type-${meeting.meetingID}">${meetingType}</span>
+      </div>
+      
+      <div class="infoContainer">
+        <span>Meeting recap:</span>
+        <span id="recap-${meeting.meetingID}">${meeting.description}</span>
+      </div>
+    `;
+
+    // Append the meeting div to the "meetingLog" section
+    meetingLog.appendChild(meetingDiv);
+  });
 }
 
-// Helper function(s): 
+// simple helperfuntion to compare dates durring sorting
+// (I had to look into this, but it should be correct)
 function compareDates(meetingA, meetingB) {
   return new Date(meetingA.date) - new Date(meetingB.date);
 }
-
 function compareReverseDates(meetingA, meetingB) {
   return new Date(meetingB.date) - new Date(meetingA.date);
+}
+
+async function showEditModal(id){
+  console.log('meeting create modal Opened')
+  // clubID should be the name of the club
+  const clubID = sessionStorage.getItem("club"); 
+  console.log(clubID);
+  // Show the delete confirmation modal
+  const modal = document.getElementById("createMeetModal");
+  modal.style.display = "flex";
+
+  const createButton = document.getElementById("createMeetButton");
+  createButton.onclick = function (){
+    console.log("function create called")
+    createMeeting(id);
+  }
+}
+
+async function createMeeting(id) {
+  console.log("Create meeting called!");
+  // Get input values
+  const meetingDate = document.getElementById("meeting-date").value;
+  const meetingTime = document.getElementById("meeting-time").value;
+  const meetingDesc = document.getElementById("meeting-desc").value;
+  const isAnEvent = document.querySelector('input[name="event"]:checked')?.value === "yes";
+  //Checks if the date exists (should allways, but better safe than sorry + added meeting description)
+  if (!meetingDate || !meetingTime || !meetingDesc) {
+    alert("Please fill in all fields!");
+    return;
+  }
+  // Convert date and time input to a Firestore timestamp
+  const [year, month, day] = meetingDate.split("-").map(Number);
+  const [hours, minutes] = meetingTime.split(":").map(Number);
+  const fullDate = new Date(year, month - 1, day, hours, minutes);
+  console.log(fullDate);
+  const meetingTimestamp = Timestamp.fromDate(fullDate);
+
+    // Get a reference to the "all-meetings" subcollection
+    const docRef = doc(db, "clubs", id);
+    const meetingsCollectionRef = collection(docRef, "all-meetings");
+    // Create a new meeting document
+    const newMeetingRef = doc(meetingsCollectionRef); // Auto-generate ID
+    await setDoc(newMeetingRef, {
+        attendance: 0,
+        description: meetingDesc,
+        date: meetingTimestamp,
+        isAnEvent: isAnEvent
+    });
+
+    console.log("Meeting saved successfully!");
+    location.reload();
+}
+
+async function showDeleteModal(meetingID, id) {
+  // I want to add sone of the meeting info club, date, time
+  // so that the user can see what meeting they are deleteing before they delete it!
+
+  console.log('meeting delete double check!')
+  // clubID should be the name of the club
+  const clubID = sessionStorage.getItem("club"); 
+  console.log(clubID);
+  console.log(meetingID);
+  // Show the delete confirmation modal
+  const modal = document.getElementById("deleteConfModal");
+  modal.style.display = "flex";
+  document.getElementById('confDelete').onclick = function (){
+    deleteMeeting(meetingID, id);
+  }
+}
+
+async function deleteMeeting(meetingID, id) {
+  console.log('meeting delete function activated...');
+  const docRef = doc(db, "clubs", id);
+    // Get a reference to the subcollection "all-meetings"
+    const meetingsCollectionRef = collection(docRef, "all-meetings");
+    const databaseItem = doc(meetingsCollectionRef, meetingID);
+    await deleteDoc(databaseItem);
+    console.log("deleted!");
+    location.reload();
+}
+
+async function editMeetingInfo(meetingID, id) {
+  console.log('meeting edit function activated!');
+
+  // Get the actual DOM elements for attendance and recap using dynamic IDs
+  const attendanceElement = document.getElementById(`attendance-${meetingID}`);
+  const recapElement = document.getElementById(`recap-${meetingID}`);
+  //const isEventElement = document.getElementById(`type-${meetingID}`);
+
+  // Get the text content of these elements
+  const attendanceCount = attendanceElement.textContent.replace('Attendance : ', ''); // Removing "Attendance : " part
+  const meetingRecap = recapElement.textContent.replace('Meeting recap: ', ''); // Removing "Meeting recap: " part
+  //const isEvent = isEventElement.textContent.replace('Meeting type: ', '');// Removing "Meeting recap: " part
+
+  // Create text input and textarea elements
+  const attendanceInput = document.createElement('input');
+  const recapInput = document.createElement('textarea');
+  //const isEventInput = document.createElement('input');
+  attendanceInput.classList.add("attendance");
+  recapInput.id = 'recapInput';
+
+  // Set the value of the input to the current text of the paragraph
+  attendanceInput.value = attendanceCount; // Assigning the text value to the input
+  recapInput.value = meetingRecap; // Assigning the text value to the textarea
+
+  // Replace the paragraph elements with the input boxes
+  attendanceElement.parentNode.replaceChild(attendanceInput, attendanceElement);
+  recapElement.parentNode.replaceChild(recapInput, recapElement);
+
+  // saving info:
+  const saveButtonElement = document.getElementById(`saveButton-${meetingID}`);
+
+// Add a click event listener for the save button
+  saveButtonElement.onclick = async function() {
+    console.log("Save button clicked!");
+    const docRef = doc(db, "clubs", id);
+    // Get a reference to the subcollection "all-meetings"
+    const clubDocSnapshot = await getDoc(docRef);
+    const meetingDate = clubDocSnapshot.data().lastMeeting;
+    const date = meetingDate.toDate();
+    console.log(date);
+    const meetingsCollectionRef = collection(docRef, "all-meetings");
+    const databaseItem = doc(meetingsCollectionRef, meetingID);
+    const databaseItemSnapshot = await getDoc(databaseItem);
+    const oldAttendance = databaseItemSnapshot.data().attendance;
+    console.log(oldAttendance);
+    const wasEvent = databaseItemSnapshot.data().isAnEvent;
+    console.log(wasEvent);
+    // Get the new values from input fields and removes white space
+    const newAttendanceString = attendanceInput.value.trim();
+    // Convert the string to an integer
+    const newAttendance = parseInt(newAttendanceString, 10); // base 10/normal
+    const newRecap = recapInput.value;
+    //checks to see if the new attendance value works (not zero)
+    if (!isNaN(newAttendance) && newRecap){
+      await updateDoc(databaseItem,{
+        attendance: newAttendance,
+        description: newRecap,
+      });
+
+      const MD = databaseItemSnapshot.data().date;
+      const D = MD.toDate();
+      console.log(D);
+
+      if(D > date){
+        await updateDoc(docRef, {
+          lastMeeting: D
+        });
+        console.log("LAST MEETING DATE UPDATED")
+      }
+
+
+      console.log("LAST MEETING UPDATED COMP")
+      console.log("GAHHHH");
+      // Log success
+      await updatePoints(id, oldAttendance, newAttendance, wasEvent, wasEvent);
+      console.log('Document successfully updated!');
+      // updatePoints(id, oldAttendance, newAttendance, isEvent, oldEventStatus);
+    }
+    else{
+      console.log('failure to update');
+      alert("failure to update");
+    };
+    console.log("end");
+    location.reload();
+  };
+}
+
+
+
+export async function cLogin() {
+  var docRef = doc(db, "clubs", sessionStorage.getItem("club"))
+  var docSnap = await getDoc(docRef)
+  sessionStorage.setItem("canEdit" , false)
+  if (sessionStorage.getItem("password") == docSnap.data().password){
+    console.log("club login working")
+    location.replace("clubDash.html")
+    sessionStorage.setItem("clubAuth", "true")
+  }else{
+    console.log("wrong username/password")
+    sessionStorage.setItem("clubAuth", false)
+    alert("Wrong Username or Password");
+
+  }
+}
+
+
+export async function editVerification() {
+  var docRef = doc(db, "clubs", sessionStorage.getItem("club"))
+  var docSnap = await getDoc(docRef)
+  console.log("checking that you're logged in")
+  sessionStorage.setItem("canEdit", "false")
+
+  if(sessionStorage.getItem("clubAuth") == "true" ){
+    if(sessionStorage.getItem("club") == docSnap.data().username){
+      if(sessionStorage.getItem("password") == docSnap.data().password){
+        sessionStorage.setItem("canEdit" , true)
+        console.log("you can edit this page!!!")
+      }else{
+        console.log("you CANT edit this page wrong club password")
+      }  
+    } else{
+      console.log("you CANT edit this page wrong club username")
+    }
+  }
+  else{
+    console.log("you CANT edit this page, not logged in")
+  }
 }

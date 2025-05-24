@@ -121,6 +121,7 @@ async function displayMeetingInfo(id){
     let meet = {
       date: meeting.data().date.toDate(),
       description: meeting.data().description,
+      location: meeting.data().location,
       meetingID: meeting.id,
       attendance: meeting.data().attendance,
       isAnEvent: meeting.data().isAnEvent
@@ -136,7 +137,7 @@ async function displayMeetingInfo(id){
   });
   
   // Sort both future and past meetings by date using helper function (compareDates).
-  pastMeetings.sort(compareDates);
+  pastMeetings.sort(compareReverseDates);
   futureMeetings.sort(compareDates);
 
   var outlook = document.getElementById("outlook"); // Get reference to "outlook" section.
@@ -180,6 +181,7 @@ async function displayMeetingInfo(id){
     meetingInfo.innerHTML = `
       <p>Date: ${meeting.date.toLocaleDateString()}</p>
       <p>Time: ${meeting.date.toLocaleTimeString()}</p>
+      <p>Location: ${meeting.location}</p>
       <p>Type: ${meetingType}<p>
       <p>Meeting info: ${meeting.description}</p>
     `;
@@ -285,6 +287,11 @@ async function displayMeetingInfo(id){
       <p>Time: ${meeting.date.toLocaleTimeString()}</p>
 
       <div class="infoContainer">
+        <span>Location:</span>
+        <span id="location-${meeting.meetingID}">${meeting.location}</span>
+      </div>
+
+      <div class="infoContainer">
         <span>Attendance:</span>
         <span id="attendance-${meeting.meetingID}">${meeting.attendance}</span>
       </div>
@@ -310,6 +317,9 @@ async function displayMeetingInfo(id){
 function compareDates(meetingA, meetingB) {
   return new Date(meetingA.date) - new Date(meetingB.date);
 }
+function compareReverseDates(meetingA, meetingB) {
+  return new Date(meetingB.date) - new Date(meetingA.date);
+}
 
 async function showEditModal(id){
   console.log('meeting create modal Opened')
@@ -333,14 +343,13 @@ async function createMeeting(id) {
   const meetingDate = document.getElementById("meeting-date").value;
   const meetingTime = document.getElementById("meeting-time").value;
   const meetingDesc = document.getElementById("meeting-desc").value;
+  const meetingLocation = document.getElementById("meeting-location").value;
   const isAnEvent = document.querySelector('input[name="event"]:checked')?.value === "yes";
-  console.log("HEEELPPP");
   //Checks if the date exists (should allways, but better safe than sorry + added meeting description)
-  if (!meetingDate || !meetingTime || !meetingDesc) {
+  if (!meetingDate || !meetingTime || !meetingDesc || !meetingLocation) {
     alert("Please fill in all fields!");
     return;
   }
-  console.log("MMMMMM");
   // Convert date and time input to a Firestore timestamp
   const [year, month, day] = meetingDate.split("-").map(Number);
   const [hours, minutes] = meetingTime.split(":").map(Number);
@@ -356,6 +365,7 @@ async function createMeeting(id) {
     await setDoc(newMeetingRef, {
         attendance: 0,
         description: meetingDesc,
+        location: meetingLocation,
         date: meetingTimestamp,
         isAnEvent: isAnEvent
     });
@@ -398,30 +408,37 @@ async function editMeetingInfo(meetingID, id) {
   // Get the actual DOM elements for attendance and recap using dynamic IDs
   const attendanceElement = document.getElementById(`attendance-${meetingID}`);
   const recapElement = document.getElementById(`recap-${meetingID}`);
+  const locationElement = document.getElementById(`location-${meetingID}`);
   //const isEventElement = document.getElementById(`type-${meetingID}`);
 
   // Get the text content of these elements
   const attendanceCount = attendanceElement.textContent.replace('Attendance : ', ''); // Removing "Attendance : " part
   const meetingRecap = recapElement.textContent.replace('Meeting recap: ', ''); // Removing "Meeting recap: " part
   //const isEvent = isEventElement.textContent.replace('Meeting type: ', '');// Removing "Meeting recap: " part
+  const meetingSpot = locationElement.textContent.replace('Location: ', ''); // Removing "Meeting recap: " part
 
   // Create text input and textarea elements
   const attendanceInput = document.createElement('input');
   const recapInput = document.createElement('textarea');
+  const locationInput = document.createElement('textarea');
   //const isEventInput = document.createElement('input');
   attendanceInput.classList.add("attendance");
   recapInput.id = 'recapInput';
+  locationInput.id = 'locationInput'
 
   // Set the value of the input to the current text of the paragraph
   attendanceInput.value = attendanceCount; // Assigning the text value to the input
   recapInput.value = meetingRecap; // Assigning the text value to the textarea
+  locationInput.value = meetingSpot;
 
   // Replace the paragraph elements with the input boxes
   attendanceElement.parentNode.replaceChild(attendanceInput, attendanceElement);
   recapElement.parentNode.replaceChild(recapInput, recapElement);
+  locationElement.parentNode.replaceChild(locationInput, locationElement);
 
   // saving info:
   const saveButtonElement = document.getElementById(`saveButton-${meetingID}`);
+
 
 // Add a click event listener for the save button
   saveButtonElement.onclick = async function() {

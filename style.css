@@ -532,13 +532,14 @@ resized to fit nicely beside the calendar -- */
   position: relative;
   text-align: center;
   font-family: 'Inter', sans-serif;
-  font-size: 35px;
+  font-size: 25px;
   font-weight: 700;
   color: black;
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 30px;
-  padding: 20px 0;
+  padding: 5px 0;
+  background-color: #efecec;
   border-top: 2px solid rgb(141, 13, 24);
   border-bottom: 2px solid rgb(141, 13, 24);
 }
@@ -1197,41 +1198,6 @@ option {
 .deleteClubButton:hover .spark {
   display: block;
 }
-/* Positions for my red sparks inside my delete button, and speed of animation/'completion'.
- i tried to make them random and not to fast so they aren't distracting 
- and infinite so they will apear as long as user hovers over them*/
-.spark1  { top: 10%; left: 20%; animation: sparkMove1 2s infinite; }
-.spark2  { top: 60%; left: 80%; animation: sparkMove2 2.3s infinite; }
-.spark3  { top: 40%; left: 10%; animation: sparkMove3 1.9s infinite; }
-.spark4  { top: 80%; left: 45%; animation: sparkMove4 2.4s infinite; }
-.spark5  { top: 25%; left: 60%; animation: sparkMove5 2.2s infinite; }
-.spark6  { top: 15%; left: 75%; animation: sparkMove6 2.1s infinite; }
-.spark7  { top: 50%; left: 30%; animation: sparkMove7 2s infinite; }
-.spark8  { top: 70%; left: 70%; animation: sparkMove8 2.5s infinite; }
-.spark9  { top: 35%; left: 20%; animation: sparkMove9 2.3s infinite; }
-.spark10 { top: 60%; left: 50%; animation: sparkMove10 2s infinite; }
-.spark11 { top: 20%; left: 40%; animation: sparkMove11 2.2s infinite; }
-.spark12 { top: 75%; left: 25%; animation: sparkMove12 1.9s infinite; }
-.spark13 { top: 55%; left: 85%; animation: sparkMove13 2.4s infinite; }
-.spark14 { top: 30%; left: 55%; animation: sparkMove14 2s infinite; }
-.spark15 { top: 65%; left: 15%; animation: sparkMove15 2.3s infinite; }
-/* Keyframes for spark movements they dictate where, angle and distance
- i made them random and so they look "organic"*/
-@keyframes sparkMove1  { 0%,100% { transform: translate(0,0); }  50% { transform: translate(50px, -60px); } }
-@keyframes sparkMove2  { 0%,100% { transform: translate(0,0); }  50% { transform: translate(-60px, 55px); } }
-@keyframes sparkMove3  { 0%,100% { transform: translate(0,0); }  50% { transform: translate(65px, 40px); } }
-@keyframes sparkMove4  { 0%,100% { transform: translate(0,0); }  50% { transform: translate(-50px, -50px); } }
-@keyframes sparkMove5  { 0%,100% { transform: translate(0,0); }  50% { transform: translate(45px, 65px); } }
-@keyframes sparkMove6  { 0%,100% { transform: translate(0,0); }  50% { transform: translate(-70px, 45px); } }
-@keyframes sparkMove7  { 0%,100% { transform: translate(0,0); }  50% { transform: translate(75px, -40px); } }
-@keyframes sparkMove8  { 0%,100% { transform: translate(0,0); }  50% { transform: translate(-40px, -70px); } }
-@keyframes sparkMove9  { 0%,100% { transform: translate(0,0); }  50% { transform: translate(60px, 60px); } }
-@keyframes sparkMove10 { 0%,100% { transform: translate(0,0); }  50% { transform: translate(-55px, -45px); } }
-@keyframes sparkMove11 { 0%,100% { transform: translate(0,0); }  50% { transform: translate(58px, -38px); } }
-@keyframes sparkMove12 { 0%,100% { transform: translate(0,0); }  50% { transform: translate(-38px, 58px); } }
-@keyframes sparkMove13 { 0%,100% { transform: translate(0,0); }  50% { transform: translate(62px, 42px); } }
-@keyframes sparkMove14 { 0%,100% { transform: translate(0,0); }  50% { transform: translate(-48px, -55px); } }
-@keyframes sparkMove15 { 0%,100% { transform: translate(0,0); }  50% { transform: translate(53px, 63px); } }
 
 /* Hover styles */
 .deleteClubButton:hover {

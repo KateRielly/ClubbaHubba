@@ -325,7 +325,7 @@ export async function renderAdminClubInfo() {
     InDagerNotice.style.backgroundColor = 'rgb(71,160,37)';
 
     var inDangerMessage = document.createElement("h4");
-    inDangerMessage.innerHTML =  "This club has met within two months. This means it is curently active and there is no casue for concern!";
+    inDangerMessage.innerHTML =  "This club has met within two months. This means it is active and there is no cause for concern!";
   }
 
   adminInDangerDiv.appendChild(InDagerNoticeWrapper);

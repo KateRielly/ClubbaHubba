@@ -165,14 +165,14 @@ export const updatePoints = async function(clubUsername, oAttendance, nAttendanc
     console.log(LTwoArray + "before editing");
 
     // Remove any existing entry with the same club name
-  const index = LTwoArray.findIndex(entry => entry.club === username);
-
+    const index = LTwoArray.findIndex(entry => entry.club === docSnap.data().clubName);
+    
     if (index !== -1) {
       LTwoArray.splice(index, 1);
     }
     console.log(LTwoArray + "after filter");
     // Add the new/updated score
-    LTwoArray.push({ club: username, points: localPointTotal });
+    LTwoArray.push({ club: docSnap.data().clubName, points: localPointTotal });
     console.log(LTwoArray + "after push");
     // Sort by points in descending order
     LTwoArray.sort((a, b) => b.points - a.points);
@@ -202,14 +202,14 @@ export const updatePoints = async function(clubUsername, oAttendance, nAttendanc
     ];
     console.log(LThreeArray + "before editing");
     // Remove any existing entry with the same club name
-    const index = LThreeArray.findIndex(entry => entry.club === username);
+    const index = LThreeArray.findIndex(entry => entry.club  === docSnap.data().clubName);
 
     if (index !== -1) {
       LThreeArray.splice(index, 1);
     }
     console.log(LThreeArray + "after splice");
     // Add the new/updated score
-    LThreeArray.push({ club: username, points: localPointTotal });
+    LThreeArray.push({ club: docSnap.data().clubName, points: localPointTotal });
     console.log(LThreeArray + "after push");
     // Sort by points in descending order
     LThreeArray.sort((a, b) => b.points - a.points);

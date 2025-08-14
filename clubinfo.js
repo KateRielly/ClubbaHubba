@@ -21,31 +21,38 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 
-//changes the sessionStorage to what is in the parameter
-export async function setClub(clubName){
-//makes a variable called showClub, set its value to be the parameter
-sessionStorage.setItem("showClub", clubName);
-console.log(sessionStorage.getItem("showClub"));
-}
-
 export const showClubs = async function () {
   const databaseItems = await getDocs(collection(db, "clubs"));
-  const names = document.getElementById("clubs");
-  names.innerHTML = "";
+
+  // Get separate containers for each level
+  const L1Container = document.getElementById("clubsL1");
+  const L2Container = document.getElementById("clubsL2");
+  const L3Container = document.getElementById("clubsL3");
+
+  // Clear existing entries
+  L1Container.innerHTML = "";
+  L2Container.innerHTML = "";
+  L3Container.innerHTML = "";
 
   databaseItems.forEach((item) => {
+    const clubData = item.data();
     const clubTile = document.createElement("button");
     clubTile.classList.add("clubButton");
-
-    // Insert span for styling/animation
-    clubTile.innerHTML = `<span>${item.data().clubName}</span>`;
+    clubTile.innerHTML = `<span>${clubData.clubName}</span>`;
 
     clubTile.onclick = function () {
       location.replace("clubDash.html");
-      sessionStorage.setItem("club", item.data().username);
+      sessionStorage.setItem("club", clubData.username);
     };
 
-    names.appendChild(clubTile);
+    // Append to the correct section based on type
+    if (clubData.type === "L1") {
+      L1Container.appendChild(clubTile);
+    } else if (clubData.type === "L2") {
+      L2Container.appendChild(clubTile);
+    } else if (clubData.type === "L3") {
+      L3Container.appendChild(clubTile);
+    }
   });
 };
 
